@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.example</groupId>
+        <artifactId>automotive-parts-api-parent</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>performance-lab7</artifactId>
+    <packaging>pom</packaging>
+
+    <properties>
+        <base.url>http://localhost:8080</base.url>
+        <test.type>baseline</test.type>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <executable>pwsh</executable>
+                    <arguments>
+                        <argument>-NoProfile</argument>
+                        <argument>-ExecutionPolicy</argument>
+                        <argument>Bypass</argument>
+                        <argument>-File</argument>
+                        <argument>${project.basedir}/run-k6.ps1</argument>
+                        <argument>-Scenario</argument>
+                        <argument>${test.type}</argument>
+                        <argument>-BaseUrl</argument>
+                        <argument>${base.url}</argument>
+                    </arguments>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

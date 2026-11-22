@@ -1,0 +1,6 @@
+
+performance-lab7/results/**/k6-raw.json
+performance-lab7/results/**/*.jtl
+
+performance-lab7/results/**/k6-raw.json
+performance-lab7/results/**/*.jtl
