@@ -1,0 +1,5 @@
+org\example\regression\SmokeTest.class
+org\example\regression\FlakyDemoBeforeFixTest.class
+org\example\regression\PartsApiClient.class
+org\example\regression\RegressionTest.class
+org\example\regression\PartsRegressionSuiteTest.class
