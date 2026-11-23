@@ -1,0 +1,145 @@
+﻿<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AutoApiTesting — Browser UI</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 900px; margin: 30px auto; padding: 0 16px; background: #f6f8fa; color: #1f2328; }
+    h1 { margin-bottom: 6px; }
+    .bar { margin-bottom: 18px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+    .card { background: #fff; border: 1px solid #d0d7de; border-radius: 8px; padding: 16px; margin-bottom: 18px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-bottom: 12px; }
+    input, button { padding: 8px 10px; border-radius: 6px; border: 1px solid #c5ccd4; font-size: 14px; }
+    button { background: #1f6feb; color: #fff; border: none; cursor: pointer; }
+    button:hover { background: #1558c0; }
+    button.secondary { background: #57606a; }
+    button.danger { background: #cf222e; padding: 5px 10px; font-size: 12px; }
+    table { width: 100%; border-collapse: collapse; background: #fff; }
+    th, td { border: 1px solid #d8dee4; padding: 8px 10px; text-align: left; font-size: 14px; }
+    th { background: #f0f3f6; }
+    #status { font-size: 13px; color: #57606a; }
+  </style>
+</head>
+<body>
+  <h1>AutoApiTesting — Панель перевірки БД та API</h1>
+  <div class="bar">
+    <a href="/swagger-ui/index.html" target="_blank">Відкрити Swagger UI</a>
+    <button class="secondary" onclick="loadParts()">Оновити список з БД</button>
+    <span id="status">Готово до роботи</span>
+  </div>
+
+  <div class="card">
+    <h3>Додати деталь (POST /api/parts)</h3>
+    <div class="grid">
+      <input id="partNumber" placeholder="Part Number (напр. BRK-101)" required />
+      <input id="name" placeholder="Назва (напр. Brake Disc)" required />
+      <input id="manufacturer" placeholder="Виробник (напр. Brembo)" value="Bosch" />
+      <input id="price" type="number" step="0.01" placeholder="Ціна" value="85.00" />
+      <input id="quantity" type="number" placeholder="Кількість" value="5" />
+    </div>
+    <button onclick="createPart()">Зберегти в БД</button>
+  </div>
+
+  <div class="card">
+    <h3>Записи в базі даних (GET /api/parts)</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Part Number</th>
+          <th>Назва</th>
+          <th>Виробник</th>
+          <th>Ціна</th>
+          <th>К-сть</th>
+          <th>Дія</th>
+        </tr>
+      </thead>
+      <tbody id="partsBody"></tbody>
+    </table>
+  </div>
+
+  <script>
+    const apiBase = '/api/parts';
+    const statusEl = document.getElementById('status');
+
+    function setStatus(msg) {
+      statusEl.textContent = msg;
+    }
+
+    async function loadParts() {
+      setStatus('Завантаження з /api/parts...');
+      try {
+        const res = await fetch(apiBase);
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        const items = Array.isArray(data) ? data : (data.content || []);
+        const tbody = document.getElementById('partsBody');
+        tbody.innerHTML = '';
+        for (const p of items) {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${p.id ?? ''}</td>
+            <td>${p.partNumber ?? ''}</td>
+            <td>${p.name ?? ''}</td>
+            <td>${p.manufacturer ?? ''}</td>
+            <td>${p.price ?? ''}</td>
+            <td>${p.quantity ?? ''}</td>
+            <td><button class="danger" onclick="deletePart('${p.id}')">Видалити</button></td>
+          `;
+          tbody.appendChild(tr);
+        }
+        setStatus(`Завантажено записів: ${items.length}`);
+      } catch (e) {
+        setStatus('Помилка завантаження: ' + e.message);
+      }
+    }
+
+    async function createPart() {
+      const payload = {
+        partNumber: document.getElementById('partNumber').value.trim(),
+        name: document.getElementById('name').value.trim(),
+        manufacturer: document.getElementById('manufacturer').value.trim(),
+        price: parseFloat(document.getElementById('price').value || '0'),
+        quantity: parseInt(document.getElementById('quantity').value || '1', 10)
+      };
+      if (!payload.partNumber || !payload.name) {
+        setStatus('Вкажи хоча б Part Number і Назву');
+        return;
+      }
+      setStatus('Збереження запису...');
+      try {
+        const res = await fetch(apiBase, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) {
+          const text = await res.text();
+          throw new Error(`HTTP ${res.status}: ${text}`);
+        }
+        document.getElementById('partNumber').value = '';
+        document.getElementById('name').value = '';
+        await loadParts();
+        setStatus('Запис успішно створено та зчитано з БД');
+      } catch (e) {
+        setStatus('Помилка створення: ' + e.message);
+      }
+    }
+
+    async function deletePart(id) {
+      if (!id || id === 'undefined') return;
+      try {
+        const res = await fetch(`${apiBase}/${id}`, { method: 'DELETE' });
+        if (!res.ok && res.status !== 204) throw new Error('HTTP ' + res.status);
+        await loadParts();
+        setStatus(`Запис ${id} видалено`);
+      } catch (e) {
+        setStatus('Помилка видалення: ' + e.message);
+      }
+    }
+
+    loadParts();
+  </script>
+</body>
+</html>
