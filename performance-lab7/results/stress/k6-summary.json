@@ -1,93 +1,149 @@
 {
-    "metrics": {
-        "part_cancel_duration": {
-            "min": 3.5378,
-            "med": 13.9185,
-            "max": 474.7344,
-            "p(90)": 31.3801,
-            "p(95)": 37.7724,
-            "avg": 17.54603302950507
-        },
-        "http_req_failed": {
-            "passes": 0,
-            "fails": 44433,
-            "thresholds": {
-                "rate<0.25": false
+    "root_group": {
+        "path": "",
+        "id": "d41d8cd98f00b204e9800998ecf8427e",
+        "groups": {
+            "1. Create Part (POST)": {
+                "name": "1. Create Part (POST)",
+                "path": "::1. Create Part (POST)",
+                "id": "b8530ffbb57e5da22afe5d6d9d68c93e",
+                "groups": {},
+                "checks": {
+                    "POST /api/parts status is 200": {
+                        "passes": 14177,
+                        "fails": 0,
+                        "name": "POST /api/parts status is 200",
+                        "path": "::1. Create Part (POST)::POST /api/parts status is 200",
+                        "id": "4e85913307c5cffc1c8a648c2963a9b4"
+                    },
+                    "POST returns dynamic id": {
+                        "id": "59dd5719e240012cf566f039a422f858",
+                        "passes": 14177,
+                        "fails": 0,
+                        "name": "POST returns dynamic id",
+                        "path": "::1. Create Part (POST)::POST returns dynamic id"
+                    }
+                }
             },
-            "value": 0
-        },
-        "http_req_waiting": {
-            "med": 10.9376,
-            "max": 474.7344,
-            "p(90)": 30.54306000000002,
-            "p(95)": 38.10622000000001,
-            "avg": 15.084431157023165,
-            "min": 0.5149
-        },
-        "part_create_duration": {
-            "max": 245.1027,
-            "p(90)": 31.9064,
-            "p(95)": 43.92705,
-            "avg": 15.409246114374346,
-            "min": 0.5149,
-            "med": 10.8232
-        },
-        "data_sent": {
-            "count": 6030577,
-            "rate": 100261.14215170256
-        },
-        "checks": {
-            "passes": 74055,
-            "fails": 0,
-            "value": 1
-        },
-        "http_req_duration": {
-            "p(90)": 30.785740000000004,
-            "p(95)": 38.35944000000001,
-            "avg": 15.313800580649735,
-            "min": 0.5149,
-            "med": 11.1974,
-            "max": 474.7344,
-            "thresholds": {
-                "p(95)<2500": false
+            "2. Get Part by Dynamic ID (GET)": {
+                "name": "2. Get Part by Dynamic ID (GET)",
+                "path": "::2. Get Part by Dynamic ID (GET)",
+                "id": "7ac1d8c1c0857a105bbe6b578ffef2d1",
+                "groups": {},
+                "checks": {
+                    "GET /api/parts/{id} status is 200": {
+                        "name": "GET /api/parts/{id} status is 200",
+                        "path": "::2. Get Part by Dynamic ID (GET)::GET /api/parts/{id} status is 200",
+                        "id": "c4e6bb1561afe3aec592860d634515cf",
+                        "passes": 14177,
+                        "fails": 0
+                    },
+                    "GET returns matching id": {
+                        "id": "74884bcd27f2b6564fac9e364fdbeb3b",
+                        "passes": 14177,
+                        "fails": 0,
+                        "name": "GET returns matching id",
+                        "path": "::2. Get Part by Dynamic ID (GET)::GET returns matching id"
+                    }
+                }
+            },
+            "3. Cancel Part (DELETE)": {
+                "path": "::3. Cancel Part (DELETE)",
+                "id": "ed7d4af63ae76b99166712875884270b",
+                "groups": {},
+                "checks": {
+                    "DELETE /api/parts/{id} status is 200 or 409": {
+                        "passes": 14177,
+                        "fails": 0,
+                        "name": "DELETE /api/parts/{id} status is 200 or 409",
+                        "path": "::3. Cancel Part (DELETE)::DELETE /api/parts/{id} status is 200 or 409",
+                        "id": "c77711279b1b866f8858dc4b3c61efee"
+                    }
+                },
+                "name": "3. Cancel Part (DELETE)"
             }
         },
-        "http_reqs": {
-            "count": 44433,
-            "rate": 738.7192517774998
-        },
-        "http_req_blocked": {
-            "min": 0,
-            "med": 0,
-            "max": 26.9859,
+        "checks": {},
+        "name": ""
+    },
+    "metrics": {
+        "http_req_connecting": {
+            "max": 7.3716,
             "p(90)": 0,
             "p(95)": 0,
-            "avg": 0.029259858663605875
-        },
-        "http_req_receiving": {
-            "p(95)": 0.7370800000000003,
-            "avg": 0.19255155177458183,
+            "avg": 0.014695067127507011,
             "min": 0,
-            "med": 0,
-            "max": 23.2829,
-            "p(90)": 0.6049
+            "med": 0
         },
-        "data_received": {
-            "count": 8173451,
-            "rate": 135887.41717102285
+        "http_req_waiting": {
+            "p(90)": 36.6419,
+            "p(95)": 44.97455,
+            "avg": 18.777771712398057,
+            "min": 2.1567,
+            "med": 14.3785,
+            "max": 166.6682
         },
         "vus_max": {
             "value": 120,
             "min": 120,
             "max": 120
         },
-        "group_duration": {
-            "p(95)": 38.89744000000001,
-            "avg": 15.612606366889699,
-            "min": 0.5149,
-            "med": 11.4887,
-            "max": 474.7344,
-            "p(90)": 31.2266
+        "http_req_duration": {
+            "avg": 19.073978585032076,
+            "min": 2.2022,
+            "med": 14.6808,
+            "max": 166.6682,
+            "p(90)": 36.9438,
+            "p(95)": 45.2783,
+            "thresholds": {
+                "p(95)<2500": false
+            }
+        },
+        "part_create_duration": {
+            "p(95)": 45.28671999999996,
+            "avg": 18.69652600691256,
+            "min": 3.677,
+            "med": 13.6197,
+            "max": 141.0209,
+            "p(90)": 36.964259999999996
+        },
+        "http_req_duration{expected_response:true}": {
+            "med": 14.6808,
+            "max": 166.6682,
+            "p(90)": 36.9438,
+            "p(95)": 45.2783,
+            "avg": 19.073978585032076,
+            "min": 2.2022
+        },
+        "http_req_sending": {
+            "med": 0,
+            "max": 3.9382,
+            "p(90)": 0,
+            "p(95)": 0.5513,
+            "avg": 0.04016898027321247,
+            "min": 0
+        },
+        "checks": {
+            "passes": 70885,
+            "fails": 0,
+            "value": 1
+        },
+        "data_received": {
+            "count": 7823057,
+            "rate": 130256.24253239269
+        },
+        "business_error_rate": {
+            "passes": 0,
+            "fails": 42531,
+            "value": 0
+        },
+        "iteration_duration": {
+            "p(95)": 328.61042,
+            "avg": 258.94534138393135,
+            "min": 215.9799,
+            "med": 246.2811,
+            "max": 490.1172,
+            "p(90)": 310.55634
         },
         "http_req_tls_handshaking": {
             "avg": 0,
@@ -97,126 +153,70 @@
             "p(90)": 0,
             "p(95)": 0
         },
-        "http_req_sending": {
-            "avg": 0.036817871852001895,
+        "http_req_receiving": {
+            "max": 15.0866,
+            "p(90)": 0.6448,
+            "p(95)": 0.76555,
+            "avg": 0.2560378923608652,
             "min": 0,
-            "med": 0,
-            "max": 11.2085,
-            "p(90)": 0,
-            "p(95)": 0.34544000000000014
+            "med": 0
         },
         "vus": {
-            "value": 1,
-            "min": 1,
+            "value": 3,
+            "min": 3,
             "max": 119
         },
-        "http_req_duration{expected_response:true}": {
-            "max": 474.7344,
-            "p(90)": 30.785740000000004,
-            "p(95)": 38.35944000000001,
-            "avg": 15.313800580649735,
-            "min": 0.5149,
-            "med": 11.1974
-        },
-        "iterations": {
-            "count": 14811,
-            "rate": 246.23975059249997
-        },
-        "business_error_rate": {
+        "http_req_failed": {
             "passes": 0,
-            "fails": 44433,
+            "fails": 42531,
+            "thresholds": {
+                "rate<0.25": false
+            },
             "value": 0
         },
-        "iteration_duration": {
-            "med": 237.0948,
-            "max": 817.4719,
-            "p(90)": 296.3883,
-            "p(95)": 315.233,
-            "avg": 247.73645507393007,
-            "min": 209.4143
-        },
-        "http_req_connecting": {
-            "avg": 0.015991614340692722,
+        "http_req_blocked": {
+            "avg": 0.03202205685264875,
             "min": 0,
             "med": 0,
-            "max": 26.9859,
+            "max": 24.4153,
             "p(90)": 0,
             "p(95)": 0
         },
-        "part_get_duration": {
-            "avg": 12.986122598069,
-            "min": 1.1566,
-            "med": 8.2575,
-            "max": 459.418,
-            "p(90)": 29.0973,
-            "p(95)": 35.7331
-        }
-    },
-    "root_group": {
-        "name": "",
-        "path": "",
-        "id": "d41d8cd98f00b204e9800998ecf8427e",
-        "groups": {
-            "1. Create Part (POST)": {
-                "id": "b8530ffbb57e5da22afe5d6d9d68c93e",
-                "groups": {},
-                "checks": {
-                    "POST /api/parts status is 200": {
-                        "name": "POST /api/parts status is 200",
-                        "path": "::1. Create Part (POST)::POST /api/parts status is 200",
-                        "id": "4e85913307c5cffc1c8a648c2963a9b4",
-                        "passes": 14811,
-                        "fails": 0
-                    },
-                    "POST returns dynamic id": {
-                        "name": "POST returns dynamic id",
-                        "path": "::1. Create Part (POST)::POST returns dynamic id",
-                        "id": "59dd5719e240012cf566f039a422f858",
-                        "passes": 14811,
-                        "fails": 0
-                    }
-                },
-                "name": "1. Create Part (POST)",
-                "path": "::1. Create Part (POST)"
-            },
-            "2. Get Part by Dynamic ID (GET)": {
-                "groups": {},
-                "checks": {
-                    "GET /api/parts/{id} status is 200": {
-                        "name": "GET /api/parts/{id} status is 200",
-                        "path": "::2. Get Part by Dynamic ID (GET)::GET /api/parts/{id} status is 200",
-                        "id": "c4e6bb1561afe3aec592860d634515cf",
-                        "passes": 14811,
-                        "fails": 0
-                    },
-                    "GET returns matching id": {
-                        "name": "GET returns matching id",
-                        "path": "::2. Get Part by Dynamic ID (GET)::GET returns matching id",
-                        "id": "74884bcd27f2b6564fac9e364fdbeb3b",
-                        "passes": 14811,
-                        "fails": 0
-                    }
-                },
-                "name": "2. Get Part by Dynamic ID (GET)",
-                "path": "::2. Get Part by Dynamic ID (GET)",
-                "id": "7ac1d8c1c0857a105bbe6b578ffef2d1"
-            },
-            "3. Cancel Part (DELETE)": {
-                "name": "3. Cancel Part (DELETE)",
-                "path": "::3. Cancel Part (DELETE)",
-                "id": "ed7d4af63ae76b99166712875884270b",
-                "groups": {},
-                "checks": {
-                    "DELETE /api/parts/{id} status is 200 or 409": {
-                        "name": "DELETE /api/parts/{id} status is 200 or 409",
-                        "path": "::3. Cancel Part (DELETE)::DELETE /api/parts/{id} status is 200 or 409",
-                        "id": "c77711279b1b866f8858dc4b3c61efee",
-                        "passes": 14811,
-                        "fails": 0
-                    }
-                }
-            }
+        "part_cancel_duration": {
+            "p(95)": 47.77291999999999,
+            "avg": 22.660096557805012,
+            "min": 6.3017,
+            "med": 18.3822,
+            "max": 166.6682,
+            "p(90)": 40.1714
         },
-        "checks": {}
+        "http_reqs": {
+            "count": 42531,
+            "rate": 708.1538906267963
+        },
+        "part_get_duration": {
+            "max": 144.353,
+            "p(90)": 33.25278,
+            "p(95)": 40.59519999999999,
+            "avg": 15.865313190378815,
+            "min": 2.2022,
+            "med": 10.867
+        },
+        "iterations": {
+            "count": 14177,
+            "rate": 236.05129687559875
+        },
+        "data_sent": {
+            "count": 5772199,
+            "rate": 96108.84247542034
+        },
+        "group_duration": {
+            "avg": 19.43812333356834,
+            "min": 2.7173,
+            "med": 15.0709,
+            "max": 166.6682,
+            "p(90)": 37.2625,
+            "p(95)": 45.636300000000006
+        }
     }
 }

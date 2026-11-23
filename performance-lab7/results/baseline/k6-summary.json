@@ -1,120 +1,147 @@
 {
     "metrics": {
-        "http_req_waiting": {
-            "min": 2.8096,
-            "med": 9.6968,
-            "max": 46.3592,
-            "p(90)": 14.903990000000007,
-            "p(95)": 18.16051,
-            "avg": 9.963993846153848
-        },
-        "checks": {
-            "passes": 650,
-            "fails": 0,
-            "value": 1
+        "iteration_duration": {
+            "p(90)": 289.3804,
+            "p(95)": 292.183125,
+            "avg": 259.2091353448277,
+            "min": 228.5277,
+            "med": 246.80135,
+            "max": 659.5612
         },
         "vus_max": {
             "value": 2,
             "min": 2,
             "max": 2
         },
-        "http_req_failed": {
-            "fails": 390,
+        "http_req_sending": {
+            "p(90)": 0,
+            "p(95)": 0.572835,
+            "avg": 0.05052643678160921,
+            "min": 0,
+            "med": 0,
+            "max": 1.1007
+        },
+        "http_req_duration": {
+            "avg": 18.953744827586213,
+            "min": 5.7839,
+            "med": 14.247250000000001,
+            "max": 348.1504,
+            "p(90)": 28.568880000000004,
+            "p(95)": 34.689219999999985,
+            "thresholds": {
+                "p(95)<500": false
+            }
+        },
+        "checks": {
+            "passes": 580,
+            "fails": 0,
+            "value": 1
+        },
+        "http_req_waiting": {
+            "p(95)": 33.57558499999999,
+            "avg": 18.30333965517243,
+            "min": 5.441,
+            "med": 13.72775,
+            "max": 346.2977,
+            "p(90)": 28.26772
+        },
+        "part_get_duration": {
+            "min": 5.7839,
+            "med": 10.05485,
+            "max": 80.4576,
+            "p(90)": 21.1722,
+            "p(95)": 25.895474999999998,
+            "avg": 13.357616379310347
+        },
+        "http_req_duration{expected_response:true}": {
+            "avg": 18.953744827586213,
+            "min": 5.7839,
+            "med": 14.247250000000001,
+            "max": 348.1504,
+            "p(90)": 28.568880000000004,
+            "p(95)": 34.689219999999985
+        },
+        "business_error_rate": {
             "passes": 0,
+            "fails": 348,
+            "value": 0
+        },
+        "http_req_connecting": {
+            "med": 0,
+            "max": 0.6233,
+            "p(90)": 0,
+            "p(95)": 0,
+            "avg": 0.006704597701149425,
+            "min": 0
+        },
+        "iterations": {
+            "count": 116,
+            "rate": 7.709810649642536
+        },
+        "vus": {
+            "min": 2,
+            "max": 2,
+            "value": 2
+        },
+        "http_req_failed": {
+            "passes": 0,
+            "fails": 348,
             "thresholds": {
                 "rate<0.01": false
             },
             "value": 0
         },
-        "iterations": {
-            "count": 130,
-            "rate": 8.603593721097301
-        },
-        "http_req_receiving": {
-            "max": 1.3398,
-            "p(90)": 0.5867500000000001,
-            "p(95)": 0.6487999999999999,
-            "avg": 0.1585279487179487,
-            "min": 0,
-            "med": 0
-        },
-        "http_req_connecting": {
-            "avg": 0.008524102564102565,
-            "min": 0,
-            "med": 0,
-            "max": 1.3342,
+        "http_req_blocked": {
             "p(90)": 0,
-            "p(95)": 0
-        },
-        "iteration_duration": {
-            "med": 230.59305,
-            "max": 263.1435,
-            "p(90)": 243.94597000000002,
-            "p(95)": 249.03738,
-            "avg": 232.37176923076927,
-            "min": 219.8172
-        },
-        "part_get_duration": {
-            "med": 5.39945,
-            "max": 24.8368,
-            "p(90)": 9.125350000000001,
-            "p(95)": 10.648035,
-            "avg": 6.20128076923077,
-            "min": 3.0318
-        },
-        "data_sent": {
-            "count": 52740,
-            "rate": 3490.4117911590133
-        },
-        "http_reqs": {
-            "count": 390,
-            "rate": 25.810781163291907
-        },
-        "http_req_duration{expected_response:true}": {
-            "avg": 10.145966666666672,
-            "min": 3.0318,
-            "med": 9.85615,
-            "max": 46.3592,
-            "p(90)": 15.197680000000007,
-            "p(95)": 18.576994999999968
-        },
-        "part_create_duration": {
-            "p(90)": 16.256120000000003,
-            "p(95)": 18.301999999999996,
-            "avg": 12.116536153846148,
-            "min": 7.0655,
-            "med": 11.0667,
-            "max": 46.3592
-        },
-        "business_error_rate": {
-            "passes": 0,
-            "fails": 390,
-            "value": 0
-        },
-        "http_req_sending": {
             "p(95)": 0,
-            "avg": 0.023444871794871792,
+            "avg": 0.14808821839080463,
             "min": 0,
             "med": 0,
-            "max": 0.7836,
-            "p(90)": 0
+            "max": 22.6343
         },
         "data_received": {
-            "count": 71368,
-            "rate": 4723.240589902094
+            "count": 63682,
+            "rate": 4232.55311888393
         },
-        "vus": {
-            "value": 2,
-            "min": 2,
-            "max": 2
+        "data_sent": {
+            "rate": 3127.5245683584412,
+            "count": 47056
         },
-        "http_req_blocked": {
-            "avg": 0.08918051282051283,
+        "http_reqs": {
+            "count": 348,
+            "rate": 23.129431948927607
+        },
+        "part_cancel_duration": {
+            "avg": 21.68727327586206,
+            "min": 11.3626,
+            "med": 18.5193,
+            "max": 67.891,
+            "p(90)": 34.5994,
+            "p(95)": 39.102675
+        },
+        "http_req_receiving": {
+            "avg": 0.5998787356321834,
             "min": 0,
-            "med": 0,
-            "max": 15.6693,
-            "p(90)": 0,
-            "p(95)": 0
+            "med": 0.569,
+            "max": 3.647,
+            "p(90)": 1.326,
+            "p(95)": 1.819359999999998
+        },
+        "part_create_duration": {
+            "med": 14.0688,
+            "max": 348.1504,
+            "p(90)": 26.35555,
+            "p(95)": 27.800250000000002,
+            "avg": 21.816344827586214,
+            "min": 8.3381
+        },
+        "group_duration": {
+            "min": 6.0232,
+            "med": 14.83985,
+            "max": 371.461,
+            "p(90)": 29.440630000000002,
+            "p(95)": 35.59047999999999,
+            "avg": 19.52330574712644
         },
         "http_req_tls_handshaking": {
             "avg": 0,
@@ -123,37 +150,9 @@
             "max": 0,
             "p(90)": 0,
             "p(95)": 0
-        },
-        "part_cancel_duration": {
-            "p(95)": 20.18283,
-            "avg": 12.120083076923075,
-            "min": 6.2957,
-            "med": 11.01895,
-            "max": 29.0701,
-            "p(90)": 17.714230000000004
-        },
-        "group_duration": {
-            "avg": 10.508314871794875,
-            "min": 3.0318,
-            "med": 10.19705,
-            "max": 46.9258,
-            "p(90)": 16.066970000000005,
-            "p(95)": 19.360954999999993
-        },
-        "http_req_duration": {
-            "med": 9.85615,
-            "max": 46.3592,
-            "p(90)": 15.197680000000007,
-            "p(95)": 18.576994999999968,
-            "avg": 10.145966666666672,
-            "min": 3.0318,
-            "thresholds": {
-                "p(95)<500": false
-            }
         }
     },
     "root_group": {
-        "name": "",
         "path": "",
         "id": "d41d8cd98f00b204e9800998ecf8427e",
         "groups": {
@@ -164,59 +163,60 @@
                 "groups": {},
                 "checks": {
                     "POST /api/parts status is 200": {
-                        "passes": 130,
-                        "fails": 0,
                         "name": "POST /api/parts status is 200",
                         "path": "::1. Create Part (POST)::POST /api/parts status is 200",
-                        "id": "4e85913307c5cffc1c8a648c2963a9b4"
+                        "id": "4e85913307c5cffc1c8a648c2963a9b4",
+                        "passes": 116,
+                        "fails": 0
                     },
                     "POST returns dynamic id": {
+                        "fails": 0,
                         "name": "POST returns dynamic id",
                         "path": "::1. Create Part (POST)::POST returns dynamic id",
                         "id": "59dd5719e240012cf566f039a422f858",
-                        "passes": 130,
-                        "fails": 0
+                        "passes": 116
                     }
                 }
             },
             "2. Get Part by Dynamic ID (GET)": {
+                "name": "2. Get Part by Dynamic ID (GET)",
+                "path": "::2. Get Part by Dynamic ID (GET)",
                 "id": "7ac1d8c1c0857a105bbe6b578ffef2d1",
                 "groups": {},
                 "checks": {
                     "GET /api/parts/{id} status is 200": {
+                        "fails": 0,
+                        "name": "GET /api/parts/{id} status is 200",
                         "path": "::2. Get Part by Dynamic ID (GET)::GET /api/parts/{id} status is 200",
                         "id": "c4e6bb1561afe3aec592860d634515cf",
-                        "passes": 130,
-                        "fails": 0,
-                        "name": "GET /api/parts/{id} status is 200"
+                        "passes": 116
                     },
                     "GET returns matching id": {
-                        "name": "GET returns matching id",
-                        "path": "::2. Get Part by Dynamic ID (GET)::GET returns matching id",
                         "id": "74884bcd27f2b6564fac9e364fdbeb3b",
-                        "passes": 130,
-                        "fails": 0
+                        "passes": 116,
+                        "fails": 0,
+                        "name": "GET returns matching id",
+                        "path": "::2. Get Part by Dynamic ID (GET)::GET returns matching id"
                     }
-                },
-                "name": "2. Get Part by Dynamic ID (GET)",
-                "path": "::2. Get Part by Dynamic ID (GET)"
+                }
             },
             "3. Cancel Part (DELETE)": {
-                "name": "3. Cancel Part (DELETE)",
                 "path": "::3. Cancel Part (DELETE)",
                 "id": "ed7d4af63ae76b99166712875884270b",
                 "groups": {},
                 "checks": {
                     "DELETE /api/parts/{id} status is 200 or 409": {
-                        "fails": 0,
                         "name": "DELETE /api/parts/{id} status is 200 or 409",
                         "path": "::3. Cancel Part (DELETE)::DELETE /api/parts/{id} status is 200 or 409",
                         "id": "c77711279b1b866f8858dc4b3c61efee",
-                        "passes": 130
+                        "passes": 116,
+                        "fails": 0
                     }
-                }
+                },
+                "name": "3. Cancel Part (DELETE)"
             }
         },
-        "checks": {}
+        "checks": {},
+        "name": ""
     }
 }
