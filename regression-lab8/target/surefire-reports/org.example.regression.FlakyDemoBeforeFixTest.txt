@@ -1,8 +1,8 @@
 -------------------------------------------------------------------------------
 Test set: org.example.regression.FlakyDemoBeforeFixTest
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.062 s <<< FAILURE! -- in org.example.regression.FlakyDemoBeforeFixTest
-org.example.regression.FlakyDemoBeforeFixTest.dependsOnOrderAndSharedState -- Time elapsed: 0.028 s <<< FAILURE!
+Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.065 s <<< FAILURE! -- in org.example.regression.FlakyDemoBeforeFixTest
+org.example.regression.FlakyDemoBeforeFixTest.dependsOnOrderAndSharedState -- Time elapsed: 0.030 s <<< FAILURE!
 org.opentest4j.AssertionFailedError: Flaky failure: depends on order and shared state from previous test ==> expected: <CREATED_BY_FIRST> but was: <null>
 	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
 	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
