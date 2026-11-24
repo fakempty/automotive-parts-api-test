@@ -1,0 +1,154 @@
+name: Lab 9 - CI/CD and Continuous Testing
+
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+    branches:
+      - "**"
+  workflow_dispatch:
+    inputs:
+      simulate_failure:
+        description: "Simulate intentional test failure to demonstrate failed pipeline"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+
+env:
+  JAVA_VERSION: "21"
+  SIMULATE_FAILURE: ${{ inputs.simulate_failure || 'false' }}
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: maven
+
+      - name: Build AutoApiTesting
+        working-directory: AutoApiTesting
+        run: chmod +x ./mvnw && ./mvnw -B clean test-compile
+
+      - name: Compile regression-lab8 if present
+        if: hashFiles('regression-lab8/pom.xml') != ''
+        working-directory: regression-lab8
+        run: mvn -B test-compile
+
+  unit-tests:
+    name: Unit Tests
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: maven
+
+      - name: Run unit tests
+        working-directory: AutoApiTesting
+        run: chmod +x ./mvnw && ./mvnw -B test
+
+      - name: Upload unit test reports artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-reports-${{ github.run_id }}-${{ github.run_attempt }}
+          path: AutoApiTesting/target/surefire-reports/
+          if-no-files-found: warn
+
+  integration-api-tests:
+    name: Integration & API Tests
+    needs: [build, unit-tests]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: maven
+
+      - name: Start service and run API checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p lab9-reports
+
+          cd AutoApiTesting
+          chmod +x ./mvnw
+          ./mvnw -B spring-boot:run -Dspring-boot.run.arguments="--server.port=8080" > ../lab9-reports/app.log 2>&1 &
+          APP_PID=$!
+          cd ..
+
+          cleanup() {
+            if kill -0 "$APP_PID" 2>/dev/null; then
+              kill "$APP_PID" || true
+              wait "$APP_PID" 2>/dev/null || true
+            fi
+          }
+          trap cleanup EXIT
+
+          echo "Waiting for service on http://localhost:8080..."
+          READY=0
+          for i in $(seq 1 30); do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/api/parts || true)
+            if [[ "$STATUS" =~ ^(200|401|403|404)$ ]]; then
+              echo "Service responded with HTTP $STATUS on attempt $i"
+              READY=1
+              break
+            fi
+            sleep 2
+          done
+
+          if [[ "$READY" -ne 1 ]]; then
+            echo "Service failed to start in time. Logs:"
+            cat lab9-reports/app.log || true
+            exit 1
+          fi
+
+          BODY=$(curl -s -w "\n%{http_code}" http://localhost:8080/api/parts)
+          CODE=$(echo "$BODY" | tail -n1)
+          CONTENT=$(echo "$BODY" | sed '$d')
+          echo "GET /api/parts -> HTTP $CODE"
+          echo "$CONTENT" > lab9-reports/api-parts-response.txt
+
+          if [[ "$CODE" -ne 200 ]]; then
+            echo "Expected HTTP 200 from /api/parts, got $CODE"
+            exit 1
+          fi
+
+          if [[ "${SIMULATE_FAILURE}" == "true" ]]; then
+            echo "::error::Intentional failure triggered (SIMULATE_FAILURE=true) to demonstrate failed pipeline"
+            echo "FAILED: Intentional API/integration assertion failure" > lab9-reports/api-check-result.txt
+            exit 1
+          fi
+
+          echo "PASSED: GET /api/parts returned HTTP 200" > lab9-reports/api-check-result.txt
+
+      - name: Upload integration & API test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-api-artifacts-${{ github.run_id }}-${{ github.run_attempt }}
+          path: lab9-reports/
+          if-no-files-found: warn
