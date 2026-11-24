@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
     inputs:
       simulate_failure:
-        description: "Simulate intentional test failure to demonstrate failed pipeline"
+        description: "Simulate intentional failure to demonstrate failed pipeline"
         required: false
         default: "false"
         type: choice
@@ -41,7 +41,7 @@ jobs:
         working-directory: AutoApiTesting
         run: chmod +x ./mvnw && ./mvnw -B clean test-compile
 
-      - name: Compile regression-lab8 if present
+      - name: Compile regression-lab8 test suite
         if: hashFiles('regression-lab8/pom.xml') != ''
         working-directory: regression-lab8
         run: mvn -B test-compile
@@ -61,7 +61,7 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
           cache: maven
 
-      - name: Run unit tests
+      - name: Run unit tests in AutoApiTesting
         working-directory: AutoApiTesting
         run: chmod +x ./mvnw && ./mvnw -B test
 
@@ -88,15 +88,15 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
           cache: maven
 
-      - name: Start service and run API checks
+      - name: Run service, API check, and regression suite
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p lab9-reports
+          mkdir -p lab9-artifacts
 
           cd AutoApiTesting
           chmod +x ./mvnw
-          ./mvnw -B spring-boot:run -Dspring-boot.run.arguments="--server.port=8080" > ../lab9-reports/app.log 2>&1 &
+          ./mvnw -B spring-boot:run -Dspring-boot.run.arguments="--server.port=8080" > ../lab9-artifacts/app.log 2>&1 &
           APP_PID=$!
           cd ..
 
@@ -108,9 +108,9 @@ jobs:
           }
           trap cleanup EXIT
 
-          echo "Waiting for service on http://localhost:8080..."
+          echo "Waiting for AutoApiTesting on http://localhost:8080..."
           READY=0
-          for i in $(seq 1 30); do
+          for i in $(seq 1 40); do
             STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/api/parts || true)
             if [[ "$STATUS" =~ ^(200|401|403|404)$ ]]; then
               echo "Service responded with HTTP $STATUS on attempt $i"
@@ -121,34 +121,39 @@ jobs:
           done
 
           if [[ "$READY" -ne 1 ]]; then
-            echo "Service failed to start in time. Logs:"
-            cat lab9-reports/app.log || true
+            echo "Service did not start in time. App log:"
+            cat lab9-artifacts/app.log || true
             exit 1
           fi
 
-          BODY=$(curl -s -w "\n%{http_code}" http://localhost:8080/api/parts)
-          CODE=$(echo "$BODY" | tail -n1)
-          CONTENT=$(echo "$BODY" | sed '$d')
-          echo "GET /api/parts -> HTTP $CODE"
-          echo "$CONTENT" > lab9-reports/api-parts-response.txt
+          API_RAW=$(curl -s -w "\n%{http_code}" http://localhost:8080/api/parts)
+          API_CODE=$(echo "$API_RAW" | tail -n1)
+          API_BODY=$(echo "$API_RAW" | sed '$d')
+          echo "GET /api/parts -> HTTP $API_CODE"
+          echo "$API_BODY" > lab9-artifacts/api-parts.json
 
-          if [[ "$CODE" -ne 200 ]]; then
-            echo "Expected HTTP 200 from /api/parts, got $CODE"
+          if [[ "$API_CODE" -ne 200 ]]; then
+            echo "Expected HTTP 200 from /api/parts, got $API_CODE"
             exit 1
+          fi
+
+          if [[ -f "regression-lab8/pom.xml" ]]; then
+            mvn -B -f regression-lab8/pom.xml test -Dtest=PartsRegressionSuiteTest -Dsut.baseUrl=http://localhost:8080 | tee lab9-artifacts/regression-suite.log
+            cp -r regression-lab8/target/surefire-reports lab9-artifacts/surefire-reports 2>/dev/null || true
           fi
 
           if [[ "${SIMULATE_FAILURE}" == "true" ]]; then
-            echo "::error::Intentional failure triggered (SIMULATE_FAILURE=true) to demonstrate failed pipeline"
-            echo "FAILED: Intentional API/integration assertion failure" > lab9-reports/api-check-result.txt
+            echo "::error::Intentional failure triggered (SIMULATE_FAILURE=true) for Lab 9 failed pipeline demo"
+            echo "FAILED: Intentional test failure in Integration & API Tests" > lab9-artifacts/status.txt
             exit 1
           fi
 
-          echo "PASSED: GET /api/parts returned HTTP 200" > lab9-reports/api-check-result.txt
+          echo "PASSED: Integration & API Tests completed successfully" > lab9-artifacts/status.txt
 
-      - name: Upload integration & API test artifacts
+      - name: Upload integration & API artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: integration-api-artifacts-${{ github.run_id }}-${{ github.run_attempt }}
-          path: lab9-reports/
+          path: lab9-artifacts/
           if-no-files-found: warn
