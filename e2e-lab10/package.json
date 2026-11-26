@@ -1,0 +1,14 @@
+{
+  "name": "e2e-lab10",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "playwright test",
+    "test:chromium": "playwright test --project=chromium",
+    "test:firefox": "playwright test --project=firefox",
+    "test:cross-browser": "playwright test tests/parts.e2e.spec.js --grep \"@cross-browser\""
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.0"
+  }
+}

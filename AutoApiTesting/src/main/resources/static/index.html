@@ -1,11 +1,11 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="uk">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AutoApiTesting — Browser UI</title>
   <style>
-    body { font-family: Arial, sans-serif; max-width: 900px; margin: 30px auto; padding: 0 16px; background: #f6f8fa; color: #1f2328; }
+    body { font-family: Arial, sans-serif; max-width: 980px; margin: 30px auto; padding: 0 16px; background: #f6f8fa; color: #1f2328; }
     h1 { margin-bottom: 6px; }
     .bar { margin-bottom: 18px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
     .card { background: #fff; border: 1px solid #d0d7de; border-radius: 8px; padding: 16px; margin-bottom: 18px; }
@@ -19,52 +19,72 @@
     th, td { border: 1px solid #d8dee4; padding: 8px 10px; text-align: left; font-size: 14px; }
     th { background: #f0f3f6; }
     #status { font-size: 13px; color: #57606a; }
+    #errorBanner { display: none; margin-top: 10px; padding: 10px 12px; border-radius: 6px; background: #ffebe9; border: 1px solid #ff8182; color: #82071e; font-size: 14px; }
+    .badge-high { display: inline-block; padding: 2px 8px; border-radius: 999px; background: #ddf4ff; color: #0969da; font-size: 12px; font-weight: 600; }
+    .badge-std { display: inline-block; padding: 2px 8px; border-radius: 999px; background: #eaeef2; color: #57606a; font-size: 12px; }
   </style>
 </head>
 <body>
   <h1>AutoApiTesting — Панель перевірки БД та API</h1>
   <div class="bar">
     <a href="/swagger-ui/index.html" target="_blank">Відкрити Swagger UI</a>
-    <button class="secondary" onclick="loadParts()">Оновити список з БД</button>
-    <span id="status">Готово до роботи</span>
+    <button class="secondary" data-testid="refresh-btn" onclick="loadParts()">Оновити список з БД</button>
+    <span id="status" data-testid="status-text">Готово до роботи</span>
   </div>
 
   <div class="card">
     <h3>Додати деталь (POST /api/parts)</h3>
     <div class="grid">
-      <input id="partNumber" placeholder="Part Number (напр. BRK-101)" required />
-      <input id="name" placeholder="Назва (напр. Brake Disc)" required />
-      <input id="manufacturer" placeholder="Виробник (напр. Brembo)" value="Bosch" />
-      <input id="price" type="number" step="0.01" placeholder="Ціна" value="85.00" />
-      <input id="quantity" type="number" placeholder="Кількість" value="5" />
+      <input id="name" data-testid="input-name" placeholder="Назва (напр. Brake Disc)" required />
+      <input id="category" data-testid="input-category" placeholder="Категорія (напр. Brakes)" value="Brakes" required />
+      <input id="price" data-testid="input-price" type="number" step="0.01" placeholder="Ціна" value="85.00" />
+      <input id="stock" data-testid="input-stock" type="number" placeholder="Залишок (stock)" value="5" />
     </div>
-    <button onclick="createPart()">Зберегти в БД</button>
+    <button data-testid="submit-part-btn" onclick="createPart()">Зберегти в БД</button>
+    <div id="errorBanner" data-testid="error-banner" role="alert"></div>
   </div>
 
   <div class="card">
     <h3>Записи в базі даних (GET /api/parts)</h3>
-    <table>
+    <table data-testid="parts-table">
       <thead>
         <tr>
           <th>ID</th>
-          <th>Part Number</th>
           <th>Назва</th>
-          <th>Виробник</th>
+          <th>Категорія</th>
           <th>Ціна</th>
-          <th>К-сть</th>
+          <th>Залишок</th>
+          <th>Статус</th>
+          <th>Правило ціни (&gt;= 150)</th>
           <th>Дія</th>
         </tr>
       </thead>
-      <tbody id="partsBody"></tbody>
+      <tbody id="partsBody" data-testid="parts-tbody"></tbody>
     </table>
   </div>
 
   <script>
     const apiBase = '/api/parts';
     const statusEl = document.getElementById('status');
+    const errorEl = document.getElementById('errorBanner');
 
     function setStatus(msg) {
       statusEl.textContent = msg;
+    }
+
+    function showError(msg) {
+      errorEl.textContent = msg;
+      errorEl.style.display = 'block';
+    }
+
+    function clearError() {
+      errorEl.textContent = '';
+      errorEl.style.display = 'none';
+    }
+
+    function evaluatePriceRule(price) {
+      const numericPrice = Number(price || 0);
+      return numericPrice >= 150 ? 'HIGH_TIER' : 'STANDARD_TIER';
     }
 
     async function loadParts() {
@@ -77,34 +97,42 @@
         const tbody = document.getElementById('partsBody');
         tbody.innerHTML = '';
         for (const p of items) {
+          const ruleLabel = evaluatePriceRule(p.price);
+          const badgeClass = ruleLabel === 'HIGH_TIER' ? 'badge-high' : 'badge-std';
           const tr = document.createElement('tr');
+          tr.setAttribute('data-testid', 'part-row');
+          tr.setAttribute('data-part-name', p.name ?? '');
+          tr.setAttribute('data-part-status', p.status ?? '');
           tr.innerHTML = `
-            <td>${p.id ?? ''}</td>
-            <td>${p.partNumber ?? ''}</td>
-            <td>${p.name ?? ''}</td>
-            <td>${p.manufacturer ?? ''}</td>
-            <td>${p.price ?? ''}</td>
-            <td>${p.quantity ?? ''}</td>
-            <td><button class="danger" onclick="deletePart('${p.id}')">Видалити</button></td>
+            <td data-testid="cell-id">${p.id ?? ''}</td>
+            <td data-testid="cell-name">${p.name ?? ''}</td>
+            <td data-testid="cell-category">${p.category ?? ''}</td>
+            <td data-testid="cell-price">${p.price ?? ''}</td>
+            <td data-testid="cell-stock">${p.stock ?? ''}</td>
+            <td data-testid="cell-status">${p.status ?? ''}</td>
+            <td data-testid="cell-rule"><span class="${badgeClass}">${ruleLabel}</span></td>
+            <td><button class="danger" data-testid="delete-part-btn" onclick="deletePart('${p.id}')">Скасувати / Видалити</button></td>
           `;
           tbody.appendChild(tr);
         }
         setStatus(`Завантажено записів: ${items.length}`);
       } catch (e) {
         setStatus('Помилка завантаження: ' + e.message);
+        showError('Помилка завантаження списку: ' + e.message);
       }
     }
 
     async function createPart() {
+      clearError();
       const payload = {
-        partNumber: document.getElementById('partNumber').value.trim(),
         name: document.getElementById('name').value.trim(),
-        manufacturer: document.getElementById('manufacturer').value.trim(),
+        category: document.getElementById('category').value.trim(),
         price: parseFloat(document.getElementById('price').value || '0'),
-        quantity: parseInt(document.getElementById('quantity').value || '1', 10)
+        stock: parseInt(document.getElementById('stock').value || '1', 10)
       };
-      if (!payload.partNumber || !payload.name) {
-        setStatus('Вкажи хоча б Part Number і Назву');
+      if (!payload.name || !payload.category) {
+        setStatus('Вкажи Назву і Категорію');
+        showError('Помилка: вкажіть назву та категорію деталі');
         return;
       }
       setStatus('Збереження запису...');
@@ -116,26 +144,30 @@
         });
         if (!res.ok) {
           const text = await res.text();
-          throw new Error(`HTTP ${res.status}: ${text}`);
+          throw new Error(`Backend відхилив запит (HTTP ${res.status}): ${text || 'Business rule violation'}`);
         }
-        document.getElementById('partNumber').value = '';
         document.getElementById('name').value = '';
         await loadParts();
         setStatus('Запис успішно створено та зчитано з БД');
       } catch (e) {
         setStatus('Помилка створення: ' + e.message);
+        showError(e.message);
       }
     }
 
     async function deletePart(id) {
       if (!id || id === 'undefined') return;
+      clearError();
       try {
         const res = await fetch(`${apiBase}/${id}`, { method: 'DELETE' });
-        if (!res.ok && res.status !== 204) throw new Error('HTTP ' + res.status);
+        if (!res.ok && res.status !== 204) {
+          throw new Error(`Бізнес-відмова backend (HTTP ${res.status}): операція скасування/видалення для ID ${id} заборонена`);
+        }
         await loadParts();
-        setStatus(`Запис ${id} видалено`);
+        setStatus(`Запис ${id} оброблено`);
       } catch (e) {
-        setStatus('Помилка видалення: ' + e.message);
+        setStatus('Помилка операції: ' + e.message);
+        showError(e.message);
       }
     }
 
